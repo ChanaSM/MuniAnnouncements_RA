@@ -1,0 +1,9 @@
+<main class="page">
+  <h1>האזור האישי</h1>
+
+  @if (isDev) {
+    <app-dev-login (changed)="reload()" />
+  }
+
+  <app-my-requests />
+</main>
