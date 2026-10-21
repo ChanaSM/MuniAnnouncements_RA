@@ -1,0 +1,95 @@
+<section aria-labelledby="my-requests-title">
+  <h2 id="my-requests-title">הבקשות שלי</h2>
+
+  @switch (state().kind) {
+    @case ('loading') {
+      <p class="status" role="status">
+        <span class="spinner" aria-hidden="true"></span>
+        טוען את הבקשות שלך...
+      </p>
+    }
+
+    @case ('error') {
+      <div class="status status--error" role="alert">
+        <p>לא הצלחנו לטעון את הבקשות שלך כרגע. אפשר לנסות שוב בעוד רגע.</p>
+        <button type="button" class="btn btn--primary" (click)="load()">נסה שוב</button>
+      </div>
+    }
+
+    @case ('ready') {
+      @if (requests().length === 0) {
+        <p class="status">עדיין לא הגשת בקשות</p>
+      } @else {
+        <ul class="list">
+          @for (request of requests(); track request.requestId) {
+              <li
+                class="card"
+                [class.card--action]="request.actionRequired"
+                [class.card--overdue]="request.isOverdue"
+              >
+                <h3 class="card__title">{{ request.serviceName }}</h3>
+                <p class="card__authority">{{ request.authorityName }}</p>
+
+                <p class="badges">
+                  <span class="badge">{{ request.status }}</span>
+                  @if (request.actionRequired) {
+                    <span class="badge badge--action">נדרשת פעולה</span>
+                  }
+                  @if (request.isOverdue) {
+                    <span class="badge badge--overdue"><span aria-hidden="true">⚠</span> חריגה מזמן הטיפול</span>
+                  }
+                </p>
+
+                <dl class="dates">
+                  <div>
+                    <dt>הוגשה</dt>
+                    <dd>{{ request.submittedAt }}</dd>
+                  </div>
+                  <div>
+                    <dt>עודכנה</dt>
+                    <dd>{{ request.lastUpdate }}</dd>
+                  </div>
+                </dl>
+
+                @if (request.actionRequired) {
+                  <div class="card__cta">
+                    <button
+                      type="button"
+                      class="btn btn--primary"
+                      [attr.aria-label]="'להשלמת הבקשה: ' + request.serviceName + ', ' + request.authorityName"
+                      (click)="openAction(request)"
+                    >
+                      להשלמת הבקשה
+                    </button>
+                    @if (isRead(request)) {
+                      <span class="read-mark"><span aria-hidden="true">✓</span> נקרא</span>
+                    }
+                  </div>
+                }
+              </li>
+            }
+          </ul>
+      }
+    }
+  }
+</section>
+
+<dialog #actionDialog class="dialog" aria-labelledby="action-title" (close)="selected.set(null)">
+  @if (selected(); as request) {
+    <h2 id="action-title" class="dialog__title">נדרשת פעולה: {{ request.serviceName }}</h2>
+    <dl class="dialog__details">
+      <dt>רשות</dt>
+      <dd>{{ request.authorityName }}</dd>
+      <dt>סטטוס נוכחי</dt>
+      <dd>{{ request.status }}</dd>
+    </dl>
+    <p>
+      הטיפול בבקשה ממתין לך. יש להשלים את הפעולה הנדרשת מול {{ request.authorityName }}
+      כדי שהטיפול יימשך.
+    </p>
+    <div class="dialog__actions">
+      <button type="button" class="btn btn--primary" (click)="confirm()">אישור</button>
+      <button type="button" class="btn" (click)="closeDialog()">סגירה</button>
+    </div>
+  }
+</dialog>

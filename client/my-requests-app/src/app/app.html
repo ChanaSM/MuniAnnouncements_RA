@@ -1,13 +1,9 @@
-<main>
-  <h1>הבקשות שלי (בדיקת חיבור זמנית)</h1>
+<main class="page">
+  <h1>האזור האישי</h1>
 
   @if (isDev) {
     <app-dev-login (changed)="reload()" />
   }
 
-  @if (error()) {
-    <p role="alert">{{ error() }}</p>
-  }
-
-  <pre dir="ltr">{{ data() | json }}</pre>
+  <app-my-requests />
 </main>

@@ -1,1 +1,28 @@
-/* You can add global styles to this file, and also import other style files */
+/* סגנונות גלובליים מינימליים. העיצוב של הרכיב עצמו נמצא בקבצים שלו. */
+:root {
+  --text: #1f2937;
+  --muted: #4b5563;
+  --surface: #ffffff;
+  --page: #f3f4f6;
+  --border: #d1d5db;
+  --focus: #1d4ed8;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--text);
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  line-height: 1.5;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}

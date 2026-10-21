@@ -1,39 +1,20 @@
-import { HttpErrorResponse } from '@angular/common/http';
-import { JsonPipe } from '@angular/common';
-import { Component, inject, isDevMode, signal } from '@angular/core';
+import { Component, isDevMode, viewChild } from '@angular/core';
 import { DevLogin } from './dev/dev-login';
-import { MyRequestsResponse } from './my-requests/my-requests.model';
-import { MyRequestsService } from './my-requests/my-requests.service';
+import { MyRequests } from './my-requests/my-requests';
 
-/**
- * שלד זמני לבדיקת החיבור ל-API (שלב 9).
- * בשלב 10 הוא יוחלף ברכיב "הבקשות שלי".
- */
+/** מדמה את הדף באזור האישי שמארח את הרכיב "הבקשות שלי". */
 @Component({
   selector: 'app-root',
-  imports: [DevLogin, JsonPipe],
+  imports: [DevLogin, MyRequests],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
 export class App {
-  private readonly service = inject(MyRequestsService);
-
   protected readonly isDev = isDevMode();
-  protected readonly data = signal<MyRequestsResponse | null>(null);
-  protected readonly error = signal<string | null>(null);
+  private readonly list = viewChild(MyRequests);
 
-  constructor() {
-    this.reload();
-  }
-
+  /** אחרי החלפת משתמש בכלי הפיתוח, טוענים את הרשימה מחדש. */
   protected reload(): void {
-    this.error.set(null);
-    this.service.getMyRequests().subscribe({
-      next: (response) => this.data.set(response),
-      error: (e: HttpErrorResponse) => {
-        this.data.set(null);
-        this.error.set(`הקריאה נכשלה, קוד ${e.status}`);
-      },
-    });
+    this.list()?.load();
   }
 }
